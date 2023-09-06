@@ -66,19 +66,24 @@ async def shutdown(ctx):
 async def data(ctx):
     guild = ctx.guild
 
-    commands_counter={"!hello":0,"!data":0,"!goodbot":0,"!shutdown":0}
     
-    async def message_count(ctx,user):
+    
+    async def message_count(ctx, user):
         count = 0
+        commands_counter={"!hello":0,"!data":0,"!goodbot":0,"!shutdown":0}
         async for message in ctx.channel.history(limit=1000):
             if message.author == user:
                 count += 1
-            if message.content in commands_counter:
-                commands_counter[message.content]+=1 
         return count
 
     member_data = []
     async def update_members():
+        commands_counter={"!hello":0,"!data":0,"!goodbot":0,"!shutdown":0}
+        
+        async for message in ctx.channel.history(limit=1000):
+            if message.content in commands_counter:
+                commands_counter[message.content] += 1
+                
         for member in guild.members:
             message_num = await message_count(ctx,member)
             member_data.append({
