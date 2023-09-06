@@ -18,6 +18,7 @@ intents.members = True
 
 client = commands.Bot(command_prefix='!',intents=intents)
 
+
 #EVENTS
 
 @client.event
@@ -29,6 +30,8 @@ async def on_ready():
 async def on_member_join(member):
     channel = client.get_channel('935603625605070911')
     await channel.send("AY HOW'S IT GOING")
+ 
+
 
 
 
@@ -50,22 +53,34 @@ async def goodbot(ctx):
     data=r.json()
     await ctx.send(data['compliment'])
 
+@client.command()
+async def shutdown(ctx):
+    if ctx.author.id==756436088515723324:
+        await ctx.send("Shut Down Initiated")
+        await client.close()
+    else:
+        await ctx.send("You don't have permission to initiate shut down")
+
 
 @client.command()
 async def data(ctx):
     guild = ctx.guild
 
-    async def message_count(user):
+    commands_counter={"!hello":0,"!data":0,"!goodbot":0,"!shutdown":0}
+    
+    async def message_count(ctx,user):
         count = 0
         async for message in ctx.channel.history(limit=1000):
             if message.author == user:
                 count += 1
+            if message.content in commands_counter:
+                commands_counter[message.content]+=1 
         return count
 
     member_data = []
     async def update_members():
         for member in guild.members:
-            message_num = await message_count(member)
+            message_num = await message_count(ctx,member)
             member_data.append({
                 'ID': member.id,
                 'Username': member.name,
@@ -78,8 +93,19 @@ async def data(ctx):
         member_high_idx = members_df.MessageCount.idxmax()
         member_high_count = members_df.iloc[member_high_idx]['MessageCount']
         member_high_name  = members_df.iloc[member_high_idx]['Username']
-        await ctx.send(f"Maximum activity over past 1000 messages by user: {member_high_name}\nSent {member_high_count} messages.")
 
+        member_low_idx = members_df.MessageCount.idxmin()
+        member_low_count = members_df.iloc[member_low_idx]['MessageCount']
+        member_low_name  = members_df.iloc[member_low_idx]['Username']
+
+        await ctx.send(f"Maximum activity over past 1000 messages by user: {member_high_name}\nSent {member_high_count} messages.\n")
+
+        await ctx.send(f"Minimum activity over past 1000 messages by user: {member_low_name}\nSent {member_low_count} messages.\n")
+
+        await ctx.send("The number of times each command was used in the past 1000 messages is:\n")
+
+        for key in commands_counter:
+            await ctx.send(f"{key} has been used {commands_counter[key]} times\n")  
 
 
     await update_members()
