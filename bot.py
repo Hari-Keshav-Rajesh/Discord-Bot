@@ -63,7 +63,7 @@ async def shutdown(ctx):
 
 
 @client.command()
-async def data(ctx):
+async def userData(ctx):
     guild = ctx.guild
 
     
@@ -78,11 +78,7 @@ async def data(ctx):
 
     member_data = []
     async def update_members():
-        commands_counter={"!hello":0,"!data":0,"!goodbot":0,"!shutdown":0}
         
-        async for message in ctx.channel.history(limit=1000):
-            if message.content in commands_counter:
-                commands_counter[message.content] += 1
                 
         for member in guild.members:
             message_num = await message_count(ctx,member)
@@ -107,15 +103,50 @@ async def data(ctx):
 
         await ctx.send(f"Minimum activity over past 1000 messages by user: {member_low_name}\nSent {member_low_count} messages.\n")
 
-        await ctx.send("The number of times each command was used in the past 1000 messages is:\n")
-
-        for key in commands_counter:
-            await ctx.send(f"{key} has been used {commands_counter[key]} times\n")  
+  
 
 
     await update_members()
         
+
+@client.command()
+async def commandData(ctx):
+
+    commands_counter={"!hello":0,"!userData":0,"!commandData":0,"!goodbot":0,"!shutdown":0,"!timeData":0}
+
+    async for message in ctx.channel.history(limit=1000):
+            if message.content in commands_counter:
+                commands_counter[message.content] += 1
     
+    await ctx.send("The number of times each command was used in the past 1000 messages is:\n")
+
+    for key in commands_counter:
+            await ctx.send(f"{key} has been used {commands_counter[key]} times\n") 
+
+@client.command()
+async def timeData(ctx):
+    time=[]
+    date=[]
+    async for message in ctx.channel.history(limit=1000):
+            timeStamp = message.created_at
+            time.append(timeStamp.strftime("%H:%M"))
+            date.append(timeStamp.strftime("%Y-%m-%d"))
+
+    timeStamp_df = pd.DataFrame({"date":date,"time":time})
+
+    time_mode = timeStamp_df.time.mode()
+    date_mode = timeStamp_df.date.mode()
+
+    await ctx.send(f"Most active session time(s) over the past 1000 messages were at:\n")
+    for i in time_mode:
+        await ctx.send(f"{i}\n")
+
+    await ctx.send(f"Most active date(s) over the past 1000 messages are:\n")
+    for i in date_mode:
+        await ctx.send(f"{i}\n")
+            
+
+
 
 
 
