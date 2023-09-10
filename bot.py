@@ -9,6 +9,25 @@ import pandas as pd
 
 from apikeys import *
 
+import mysql.connector
+from mysql.connector import Error
+
+
+try:
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password=password_mysql,
+        database="test"
+    )
+
+    if connection.is_connected():
+        print("Connected to MySQL database")
+except Error as e:
+    print(f"Error: {e}")
+
+
+
 
 
 
@@ -61,12 +80,37 @@ async def shutdown(ctx):
     else:
         await ctx.send("You don't have permission to initiate shut down")
 
+    
+        
 
 @client.command()
-async def userData(ctx):
-    guild = ctx.guild
+async def logCommandData(ctx):
 
+    commands_counter={"!hello":0,"!userTimeData":0,"!goodbot":0,"!shutdown":0}
+
+    async for message in ctx.channel.history(limit=1000):
+            if message.content in commands_counter:
+                commands_counter[message.content] += 1
     
+    insert_query = "INSERT INTO commands (hello, userTimeData,goodbot,shutdown) VALUES (%s, %s,%s,%s)"
+
+    values = tuple(commands_counter[key] for key in ["!hello", "!userTimeData", "!goodbot", "!shutdown"])
+
+    with connection.cursor() as cursor:
+        cursor.execute(insert_query, values)
+        connection.commit()
+            
+
+@client.command()
+async def logData(ctx):
+    time=[]
+    date=[]
+    async for message in ctx.channel.history(limit=1000):
+            timeStamp = message.created_at
+            time.append(timeStamp.strftime("%H:%M"))
+            date.append(timeStamp.strftime("%Y-%m-%d"))
+
+    guild = ctx.guild
     
     async def message_count(ctx, user):
         count = 0
@@ -88,61 +132,28 @@ async def userData(ctx):
                 'MessageCount': message_num
             })
 
-        members_df = pd.DataFrame(member_data)
-
-        member_high_idx = members_df.MessageCount.idxmax()
-        member_high_count = members_df.iloc[member_high_idx]['MessageCount']
-        member_high_name  = members_df.iloc[member_high_idx]['Username']
-
-        member_low_idx = members_df.MessageCount.idxmin()
-        member_low_count = members_df.iloc[member_low_idx]['MessageCount']
-        member_low_name  = members_df.iloc[member_low_idx]['Username']
-
-        await ctx.send(f"Maximum activity over past 1000 messages by user: {member_high_name}\nSent {member_high_count} messages.\n")
-
-        await ctx.send(f"Minimum activity over past 1000 messages by user: {member_low_name}\nSent {member_low_count} messages.\n")
-
-  
-
-
     await update_members()
-        
 
-@client.command()
-async def commandData(ctx):
-
-    commands_counter={"!hello":0,"!userData":0,"!commandData":0,"!goodbot":0,"!shutdown":0,"!timeData":0}
-
-    async for message in ctx.channel.history(limit=1000):
-            if message.content in commands_counter:
-                commands_counter[message.content] += 1
-    
-    await ctx.send("The number of times each command was used in the past 1000 messages is:\n")
-
-    for key in commands_counter:
-            await ctx.send(f"{key} has been used {commands_counter[key]} times\n") 
-
-@client.command()
-async def timeData(ctx):
-    time=[]
-    date=[]
-    async for message in ctx.channel.history(limit=1000):
-            timeStamp = message.created_at
-            time.append(timeStamp.strftime("%H:%M"))
-            date.append(timeStamp.strftime("%Y-%m-%d"))
+    insert_query = "INSERT INTO activity (time_col, date_col,max_name,max_count,min_name,min_count) VALUES (%s, %s,%s,%s,%s,%s)"
 
     timeStamp_df = pd.DataFrame({"date":date,"time":time})
+    time_mode = list(timeStamp_df.time.mode())
+    date_mode = list(timeStamp_df.date.mode())
 
-    time_mode = timeStamp_df.time.mode()
-    date_mode = timeStamp_df.date.mode()
+    members_df = pd.DataFrame(member_data)
+    member_high_idx = members_df.MessageCount.idxmax()
+    member_high_count = members_df.iloc[member_high_idx]['MessageCount']
+    member_high_name  = members_df.iloc[member_high_idx]['Username']
 
-    await ctx.send(f"Most active session time(s) over the past 1000 messages were at:\n")
-    for i in time_mode:
-        await ctx.send(f"{i}\n")
+    member_low_idx = members_df.MessageCount.idxmin()
+    member_low_count = members_df.iloc[member_low_idx]['MessageCount']
+    member_low_name  = members_df.iloc[member_low_idx]['Username']
 
-    await ctx.send(f"Most active date(s) over the past 1000 messages are:\n")
-    for i in date_mode:
-        await ctx.send(f"{i}\n")
+    with connection.cursor() as cursor:
+        cursor.execute(insert_query, (time_mode[0], date_mode[0],member_high_name,str(member_high_count),member_low_name,str(member_low_count))) 
+
+    connection.commit()
+
 
 
 @client.command()
