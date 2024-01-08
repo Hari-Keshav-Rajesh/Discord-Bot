@@ -18,3 +18,7 @@ from slash_commands.trivia import trivia
 from slash_commands.weather import weather
 
 client.run(botToken)
+
+'''
+Main file where all the imports are done and the bot is run
+'''

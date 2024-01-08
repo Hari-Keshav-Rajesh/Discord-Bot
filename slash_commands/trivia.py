@@ -4,6 +4,7 @@ import json
 import random
 import asyncio
 
+#Slash_command to generate a random trivia question and check if user returned answer is right or wrong
 @client.slash_command(name='trivia',description="Random Trivia Question")
 async def trivia(interaction):
     

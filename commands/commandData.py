@@ -1,7 +1,7 @@
 from client import client
 from db import connection
 
-
+#Command to log command data by storing number of times each command is used in the last 1000 messages
 @client.command()
 async def logCommandData(ctx):
 

@@ -2,6 +2,7 @@ from client import client
 import requests
 import json
 
+#Slash_command to show current weather forecast in Bangalore
 @client.slash_command(name='weather',description='Weather ForeCast')
 async def weather(interaction):
     await interaction.response.defer()

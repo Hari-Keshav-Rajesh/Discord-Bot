@@ -2,7 +2,7 @@ from client import client
 import requests
 import json
 
-
+#Slash_command to generate a joke
 @client.slash_command(name='joke',description='Randome Joke Generator')
 async def joke(interaction):
 

@@ -1,5 +1,6 @@
 from client import client
 
+#command to show the user their personal message count and most common time in the last 1000 messages
 @client.command()
 async def myStats(ctx):
 

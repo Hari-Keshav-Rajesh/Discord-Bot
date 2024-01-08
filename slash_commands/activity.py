@@ -2,6 +2,7 @@ from client import client
 import requests
 import json
 
+#Slash_command to generate a random activity
 @client.slash_command(name='activity',description="Random Activity Generator")
 async def activity(interaction):
     

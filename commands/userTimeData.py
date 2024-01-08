@@ -1,6 +1,7 @@
 from client import client
 import pandas as pd
 
+#Command to show server each user's most common time in the last 1000 messages
 @client.command()
 async def userTimeData(ctx):
     guild = ctx.guild

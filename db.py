@@ -15,3 +15,7 @@ try:
         print("Connected to MySQL database")
 except Error as e:
     print(f"Error: {e}")
+
+'''
+File to declare the SQL connection
+'''

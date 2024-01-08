@@ -1,11 +1,9 @@
 from client import client
 from db import connection
 
-import requests
-import json
 import pandas as pd
 
-
+# Command to log message data by storing the time and date of the most common message time and date, and the user with the most and least messages in the last 500 messages
 @client.command()
 async def logData(ctx):
     await ctx.send("Logging Data....")

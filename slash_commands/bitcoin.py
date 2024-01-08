@@ -2,6 +2,7 @@ from client import client
 import requests
 import json
 
+#Slash_command to show current bitcoin prices in USD, GBP and EUR
 @client.slash_command(name='bitcoin',description='Latest BitCoin Values')
 async def bitcoin(interaction):
 
