@@ -11,8 +11,12 @@ async def weather(interaction):
     def Cel(a):
         C=a-273.15
         return C
-    await interaction.followup.send("Bangalore Current Weather:")
-    await interaction.followup.send("Description:%s\nTemperature:%.2fC"%(data['weather'][0]['description'],Cel(data['main']['temp'])))
-    await interaction.followup.send("It feels like %.2fC"%(Cel(data['main']['feels_like'])))
-    await interaction.followup.send("The pressure is %d hPa"%(data['main']['pressure']))
-    await interaction.followup.send("The humidity is at %d percent and wind speed is %f m/s"%(data['main']['humidity'],data['wind']['speed']))
+
+    await interaction.followup.send(
+        "Bangalore Weather Forecast:\n"
+        f"Description:{data['weather'][0]['description']}\n"
+        f"Temperature:{Cel(data['main']['temp_min'])}C to {Cel(data['main']['temp_max'])}C\n"
+        f"It feels like {Cel(data['main']['feels_like'])}C\n"
+        f"The pressure is {data['main']['pressure']} hPa\n"
+        f"The humidity is at {data['main']['humidity']} percent and wind speed is {data['wind']['speed']} m/s"
+    )

@@ -1,5 +1,4 @@
 from client import client
-import requests
 
 @client.command()
 async def hello(ctx):
@@ -9,9 +8,6 @@ async def hello(ctx):
 @client.command()
 async def goodbot(ctx):
     await ctx.send("Thanks a ton")
-    r=requests.get('https://complimentr.com/api')
-    data=r.json()
-    await ctx.send(data['compliment'])
 
 @client.command()
 async def shutdown(ctx):
