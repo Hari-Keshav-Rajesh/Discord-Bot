@@ -9,6 +9,7 @@ from commands.basic import *
 from commands.commandData import logCommandData
 from commands.messageData import logData
 from commands.userTimeData import userTimeData
+from commands.myStats import myStats
 
 from slash_commands.bitcoin import bitcoin
 from slash_commands.joke import joke
