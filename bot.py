@@ -1,6 +1,7 @@
-from client import client
+import os
+from dotenv import load_dotenv
 
-from apikeys import botToken
+from client import client
 
 
 from events.basic import *
@@ -16,6 +17,10 @@ from slash_commands.joke import joke
 from slash_commands.activity import activity
 from slash_commands.trivia import trivia
 from slash_commands.weather import weather
+
+load_dotenv()
+botToken = os.getenv('botToken')
+
 
 client.run(botToken)
 

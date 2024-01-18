@@ -1,7 +1,11 @@
+import os
+from dotenv import load_dotenv
+
 import mysql.connector
 from mysql.connector import Error
 
-from apikeys import password_mysql
+load_dotenv()
+password_mysql = os.getenv('password_mysql')
 
 try:
     connection = mysql.connector.connect(
